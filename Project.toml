@@ -1,0 +1,13 @@
+name = "TaijaParallel"
+uuid = "bf1c2c22-5e42-4e78-8b6b-92e6c673eeb0"
+authors = ["Patrick Altmeyer"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
