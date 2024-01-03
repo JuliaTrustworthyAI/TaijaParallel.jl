@@ -13,4 +13,5 @@ end
     mpiexec() do exe    # MPI wrapper
         run(`$exe -n $n $(Base.julia_cmd()) CounterfactualExplanations.jl/mpi.jl`)
     end
+    @test true
 end
