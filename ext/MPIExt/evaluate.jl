@@ -8,7 +8,7 @@
 
 Parallelizes the evaluation of the `CounterfactualExplanations.Evaluation.evaluate` function. This function is used to evaluate the performance of a counterfactual explanation method. 
 """
-function CounterfactualExplanations.parallelize(
+function parallelize(
     parallelizer::MPIParallelizer,
     f::typeof(CounterfactualExplanations.Evaluation.evaluate),
     args...;
@@ -66,7 +66,7 @@ function CounterfactualExplanations.parallelize(
         else
             # Parallelize further with `Threads.@threads`:
             second_parallelizer = ThreadsParallelizer()
-            output = CounterfactualExplanations.parallelize(
+            output = parallelize(
                 second_parallelizer, f, eachcol(worker_chunk)...; kwargs...
             )
         end

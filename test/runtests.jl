@@ -2,5 +2,9 @@ using TaijaParallel
 using Test
 
 @testset "TaijaParallel.jl" begin
-    # Write your tests here.
+    
+    @testset "CounterfactualExplanations.jl" begin
+        include("CounterfactualExplanations.jl/CounterfactualExplanations.jl")
+    end
+
 end

@@ -1,5 +1,5 @@
 """
-    CounterfactualExplanations.parallelize(
+    parallelize(
         parallelizer::ThreadsParallelizer,
         f::typeof(CounterfactualExplanations.generate_counterfactual),
         args...;
@@ -8,7 +8,7 @@
 
 Parallelizes the evaluation of `f` using `Threads.@threads`. This function is used to generate counterfactual explanations.
 """
-function CounterfactualExplanations.parallelize(
+function parallelize(
     parallelizer::ThreadsParallelizer,
     f::typeof(CounterfactualExplanations.generate_counterfactual),
     args...;

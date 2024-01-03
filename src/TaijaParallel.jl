@@ -53,15 +53,17 @@ macro with_parallelizer(parallelizer, expr)
 
     # Parallelize:
     output = quote
-        if !CounterfactualExplanations.parallelizable($f)
-            throw(AssertionError("$(f) is not a parallelizable process."))
+        if !parallelizable($f)
+            throw(AssertionError("$($f) is not a parallelizable process."))
         end
-        output = CounterfactualExplanations.parallelize(
+        output = parallelize(
             $pllr, $f, $escaped_args...; $aakws...
         )
         output
     end
     return output
 end
+
+include("CounterfactualExplanations.jl/CounterfactualExplanations.jl")
 
 end

@@ -2,7 +2,7 @@ using MLUtils: stack
 using Serialization
 
 """
-    CounterfactualExplanations.parallelize(
+    parallelize(
         parallelizer::MPIParallelizer,
         f::typeof(CounterfactualExplanations.generate_counterfactual),
         args...;
@@ -11,7 +11,7 @@ using Serialization
 
 Parallelizes the `CounterfactualExplanations.generate_counterfactual` function using `MPI.jl`. This function is used to generate counterfactual explanations.
 """
-function CounterfactualExplanations.parallelize(
+function parallelize(
     parallelizer::MPIParallelizer,
     f::typeof(CounterfactualExplanations.generate_counterfactual),
     args...;
@@ -65,7 +65,7 @@ function CounterfactualExplanations.parallelize(
         else
             # Parallelize further with `Threads.@threads`:
             second_parallelizer = ThreadsParallelizer()
-            output = CounterfactualExplanations.parallelize(
+            output = parallelize(
                 second_parallelizer, f, eachcol(worker_chunk)...; kwargs...
             )
         end
