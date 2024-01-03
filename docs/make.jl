@@ -21,5 +21,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/JuliaTrustworthyAI/TaijaParallel.jl",
-    devbranch="master",
+    devbranch="main",
 )
