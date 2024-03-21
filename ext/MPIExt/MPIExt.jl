@@ -8,7 +8,7 @@ using MPI
 using ProgressMeter
 
 "The `MPIParallelizer` type is used to parallelize the evaluation of a function using `MPI.jl`."
-struct MPIParallelizer <: AbstractParallelizer
+struct MPIParallelizer <: TaijaParallel.AbstractParallelizer
     comm::MPI.Comm
     rank::Int
     n_proc::Int

@@ -1,6 +1,6 @@
 module TaijaParallel
 
-export ThreadsParallelizer
+export AbstractParallelizer, ThreadsParallelizer
 
 "An abstract type for parallelizers."
 abstract type AbstractParallelizer end
@@ -65,5 +65,7 @@ macro with_parallelizer(parallelizer, expr)
 end
 
 include("CounterfactualExplanations.jl/CounterfactualExplanations.jl")
+
+include("extensions/extensions.jl")
 
 end
