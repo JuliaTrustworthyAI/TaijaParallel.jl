@@ -1,6 +1,6 @@
 module TaijaParallel
 
-export @with_parallelizer, with_parallelizer, ThreadsParallelizer
+export ThreadsParallelizer
 
 "An abstract type for parallelizers."
 abstract type AbstractParallelizer end
