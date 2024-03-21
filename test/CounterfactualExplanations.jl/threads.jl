@@ -1,5 +1,6 @@
 using CounterfactualExplanations
 using TaijaData
+using TaijaParallel: ThreadsParallelizer, @with_parallelizer
 
 counterfactual_data = TaijaData.load_linearly_separable() |>
     data -> counterfactual_data = CounterfactualExplanations.DataPreprocessing.CounterfactualData(

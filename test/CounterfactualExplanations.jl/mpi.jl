@@ -1,8 +1,9 @@
-using TaijaData
 using CounterfactualExplanations
 using CounterfactualExplanations.Evaluation: benchmark
 using CounterfactualExplanations.Parallelization
 using Logging
+using TaijaData
+using TaijaParallel: MPIParallelizer
 using Test
 
 # Initialize MPI
