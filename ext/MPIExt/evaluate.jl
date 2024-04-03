@@ -8,7 +8,7 @@
 
 Parallelizes the evaluation of the `CounterfactualExplanations.Evaluation.evaluate` function. This function is used to evaluate the performance of a counterfactual explanation method. 
 """
-function TaijaParallel.parallelize(
+function TaijaBase.parallelize(
     parallelizer::MPIParallelizer,
     f::typeof(CounterfactualExplanations.Evaluation.evaluate),
     args...;

@@ -7,7 +7,7 @@ using TaijaParallel: MPIParallelizer
 using Test
 
 # Initialize MPI
-using MPI: MPI
+using MPI
 MPI.Init()
 
 data = TaijaData.load_linearly_separable()

@@ -1,3 +1,5 @@
+import TaijaBase
+
 """
     parallelize(
         parallelizer::ThreadsParallelizer,
@@ -8,7 +10,7 @@
 
 Parallelizes the evaluation of `f` using `Threads.@threads`. This function is used to generate counterfactual explanations.
 """
-function parallelize(
+function TaijaBase.parallelize(
     parallelizer::ThreadsParallelizer,
     f::typeof(CounterfactualExplanations.generate_counterfactual),
     args...;

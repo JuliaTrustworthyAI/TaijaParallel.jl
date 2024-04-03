@@ -2,10 +2,11 @@ module MPIExt
 
 export MPIParallelizer
 
-using TaijaParallel
 using Logging
 using MPI
 using ProgressMeter
+using TaijaBase
+using TaijaParallel
 
 "The `MPIParallelizer` type is used to parallelize the evaluation of a function using `MPI.jl`."
 struct MPIParallelizer <: TaijaParallel.AbstractParallelizer
