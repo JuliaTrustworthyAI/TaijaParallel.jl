@@ -1,9 +1,8 @@
 module TaijaParallel
 
-export AbstractParallelizer, ThreadsParallelizer
+using TaijaBase
 
-"An abstract type for parallelizers."
-abstract type AbstractParallelizer end
+export AbstractParallelizer, ThreadsParallelizer
 
 "The `ThreadsParallelizer` type is used to parallelize the evaluation of a function using `Threads.@threads`."
 struct ThreadsParallelizer <: AbstractParallelizer end

@@ -9,6 +9,7 @@ Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 MLUtils = "f1d291b0-491e-4a28-83b9-f70985020b54"
 ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+TaijaBase = "10284c91-9f28-4c9a-abbf-ee43576dfff6"
 
 [weakdeps]
 MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
