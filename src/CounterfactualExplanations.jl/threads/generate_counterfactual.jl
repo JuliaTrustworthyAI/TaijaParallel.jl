@@ -12,12 +12,12 @@ function parallelize(
     parallelizer::ThreadsParallelizer,
     f::typeof(CounterfactualExplanations.generate_counterfactual),
     args...;
-    verbose::Bool=true,
+    verbose::Bool = true,
     kwargs...,
 )
 
     # Extract positional arguments:
-    counterfactuals = args[1] |> x -> CounterfactualExplanations.vectorize_collection(x)
+    counterfactuals = args[1] |> x -> vectorize_collection(x)
     target = args[2] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
     data = args[3] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
     M = args[4] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
@@ -29,16 +29,16 @@ function parallelize(
     # Preallocate:
     ces = [
         Vector{CounterfactualExplanations.AbstractCounterfactualExplanation}() for
-        _ in 1:Threads.nthreads()
+        _ = 1:Threads.nthreads()
     ]
 
     # Verbosity:
     if verbose
         prog = ProgressMeter.Progress(
             length(args);
-            desc="Generating counterfactuals ...",
-            showspeed=true,
-            color=:green,
+            desc = "Generating counterfactuals ...",
+            showspeed = true,
+            color = :green,
         )
     end
 

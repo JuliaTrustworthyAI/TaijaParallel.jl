@@ -2,10 +2,14 @@ using CounterfactualExplanations
 using TaijaData
 using TaijaParallel: ThreadsParallelizer, @with_parallelizer
 
-counterfactual_data = TaijaData.load_linearly_separable() |>
-    data -> counterfactual_data = CounterfactualExplanations.DataPreprocessing.CounterfactualData(
-        Float32.(data[1]), data[2]
-    )
+counterfactual_data =
+    TaijaData.load_linearly_separable() |>
+    data ->
+        counterfactual_data =
+            CounterfactualExplanations.DataPreprocessing.CounterfactualData(
+                Float32.(data[1]),
+                data[2],
+            )
 M = fit_model(counterfactual_data, :MLP)
 generator = GenericGenerator()
 factual = 1

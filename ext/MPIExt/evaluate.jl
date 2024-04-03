@@ -12,7 +12,7 @@ function parallelize(
     parallelizer::MPIParallelizer,
     f::typeof(CounterfactualExplanations.Evaluation.evaluate),
     args...;
-    verbose::Bool=false,
+    verbose::Bool = false,
     kwargs...,
 )
 
@@ -20,7 +20,7 @@ function parallelize(
     n_each = parallelizer.n_each
 
     # Extract positional arguments:
-    counterfactuals = args[1] |> x -> CounterfactualExplanations.vectorize_collection(x)
+    counterfactuals = args[1] |> x -> vectorize_collection(x)
     # Get meta data if supplied:
     if length(args) > 1
         meta_data = args[2]
@@ -33,7 +33,7 @@ function parallelize(
     # Break down into chunks:
     args = zip(counterfactuals, meta_data)
     if !isnothing(n_each)
-        chunks = Parallelization.chunk_obs(args, n_each, parallelizer.n_proc)
+        chunks = chunk_obs(args, n_each, parallelizer.n_proc)
     else
         chunks = [collect(args)]
     end
@@ -43,15 +43,15 @@ function parallelize(
 
     # For each chunk:
     for (i, chunk) in enumerate(chunks)
-        worker_chunk = Parallelization.split_obs(chunk, parallelizer.n_proc)
+        worker_chunk = split_obs(chunk, parallelizer.n_proc)
         worker_chunk = MPI.scatter(worker_chunk, parallelizer.comm)
-        worker_chunk = stack(worker_chunk; dims=1)
+        worker_chunk = stack(worker_chunk; dims = 1)
         if !parallelizer.threaded
             if parallelizer.rank == 0 && verbose
                 # Generating counterfactuals with progress bar:
                 output = []
                 @showprogress desc = "Evaluating counterfactuals ..." for x in zip(
-                    eachcol(worker_chunk)...
+                    eachcol(worker_chunk)...,
                 )
                     with_logger(NullLogger()) do
                         push!(output, f(x...; kwargs...))
@@ -66,9 +66,8 @@ function parallelize(
         else
             # Parallelize further with `Threads.@threads`:
             second_parallelizer = ThreadsParallelizer()
-            output = parallelize(
-                second_parallelizer, f, eachcol(worker_chunk)...; kwargs...
-            )
+            output =
+                parallelize(second_parallelizer, f, eachcol(worker_chunk)...; kwargs...)
         end
         MPI.Barrier(parallelizer.comm)
 
@@ -84,7 +83,7 @@ function parallelize(
     # Load output from rank 0:
     if parallelizer.rank == 0
         outputs = []
-        for i in 1:length(chunks)
+        for i = 1:length(chunks)
             output = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
             push!(outputs, output)
         end
@@ -95,7 +94,7 @@ function parallelize(
     end
 
     # Broadcast output to all processes:
-    final_output = MPI.bcast(output, parallelizer.comm; root=0)
+    final_output = MPI.bcast(output, parallelizer.comm; root = 0)
     MPI.Barrier(parallelizer.comm)
 
     return final_output
