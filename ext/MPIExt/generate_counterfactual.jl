@@ -12,7 +12,7 @@ using Serialization
 
 Parallelizes the `CounterfactualExplanations.generate_counterfactual` function using `MPI.jl`. This function is used to generate counterfactual explanations.
 """
-function parallelize(
+function TaijaParallel.parallelize(
     parallelizer::MPIParallelizer,
     f::typeof(CounterfactualExplanations.generate_counterfactual),
     args...;
