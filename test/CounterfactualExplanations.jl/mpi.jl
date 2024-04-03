@@ -1,5 +1,6 @@
 using CounterfactualExplanations
 using CounterfactualExplanations.Evaluation: benchmark
+using LaplaceRedux
 using Logging
 using TaijaData
 using TaijaParallel: MPIParallelizer
