@@ -3,7 +3,7 @@ using CounterfactualExplanations.Evaluation: benchmark
 using LaplaceRedux
 using Logging
 using TaijaData
-using TaijaParallel: MPIParallelizer
+using TaijaParallel
 using Test
 
 # Initialize MPI
