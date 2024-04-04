@@ -13,7 +13,7 @@ MPI.Init()
 data = TaijaData.load_linearly_separable()
 counterfactual_data =
     CounterfactualExplanations.DataPreprocessing.CounterfactualData(data[1], data[2])
-parallelizer = MPIParallelizer(MPI.COMM_WORLD)
+parallelizer = TaijaParallel.MPIParallelizer(MPI.COMM_WORLD)
 with_logger(NullLogger()) do
     bmk = benchmark(counterfactual_data; parallelizer = parallelizer)
 end

@@ -1,7 +1,7 @@
 using TaijaParallel: ProcessStyle, IsParallel, parallelizable
 
 ProcessStyle(::Type{<:typeof(sum)}) = IsParallel()
-ProcessStyle(::Type{<:typeof(prod)}) = NotParallel()
+ProcessStyle(::Type{<:typeof(Base.prod)}) = NotParallel()
 
 @test parallelizable(sum) == true
-@test parallelizable(product) == false
+@test parallelizable(Base.prod) == false
