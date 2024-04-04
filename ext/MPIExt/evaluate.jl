@@ -20,7 +20,7 @@ function TaijaBase.parallelize(
     n_each = parallelizer.n_each
 
     # Extract positional arguments:
-    counterfactuals = args[1] |> x -> vectorize_collection(x)
+    counterfactuals = args[1] |> x -> TaijaBase.vectorize_collection(x)
     # Get meta data if supplied:
     if length(args) > 1
         meta_data = args[2]

@@ -3,14 +3,14 @@ module TaijaParallel
 using Reexport
 using TaijaBase
 
-export ThreadsParallelizer
-@reexport import TaijaBase:
-    parallelize, parallelizable, AbstractParallelizer, ProcessStyle, IsParallel, NotParallel
+@reexport import TaijaBase: parallelize, parallelizable, AbstractParallelizer
+export ThreadsParallelizer, IsParallel, NotParallel, ProcessStyle, parallelizable
 
 "The `ThreadsParallelizer` type is used to parallelize the evaluation of a function using `Threads.@threads`."
 struct ThreadsParallelizer <: AbstractParallelizer end
 
 include("utils.jl")
+include("traits.jl")
 
 """
     @with_parallelizer(parallelizer, expr)

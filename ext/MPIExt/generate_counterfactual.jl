@@ -24,7 +24,7 @@ function TaijaBase.parallelize(
     n_each = parallelizer.n_each
 
     # Extract positional arguments:
-    counterfactuals = args[1] |> x -> vectorize_collection(x)
+    counterfactuals = args[1] |> x -> TaijaBase.vectorize_collection(x)
     target = args[2] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
     data = args[3] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
     M = args[4] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
