@@ -19,7 +19,7 @@ function TaijaBase.parallelize(
 )
 
     # Setup:
-    counterfactuals = args[1] |> x -> vectorize_collection(x)
+    counterfactuals = args[1] |> x -> TaijaBase.vectorize_collection(x)
 
     # Get meta data if supplied:
     if length(args) > 1
@@ -30,7 +30,7 @@ function TaijaBase.parallelize(
 
     # Check meta data:
     if typeof(meta_data) <: AbstractArray
-        meta_data = vectorize_collection(meta_data)
+        meta_data = TaijaBase.vectorize_collection(meta_data)
         @assert length(meta_data) == length(counterfactuals) "The number of meta data must match the number of counterfactuals."
     else
         meta_data = fill(meta_data, length(counterfactuals))

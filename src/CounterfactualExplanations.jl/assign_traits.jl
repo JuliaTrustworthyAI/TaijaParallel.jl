@@ -1,7 +1,11 @@
 "The `generate_counterfactual` method is parallelizable."
-ProcessStyle(::Type{<:typeof(generate_counterfactual)}) = IsParallel()
+TaijaBase.ProcessStyle(
+    ::Type{<:typeof(CounterfactualExplanations.generate_counterfactual)},
+) = TaijaBase.IsParallel()
 
 "The `evaluate` function is parallelizable."
-function ProcessStyle(::Type{<:typeof(CounterfactualExplanations.Evaluation.evaluate)})
-    return IsParallel()
+function TaijaBase.ProcessStyle(
+    ::Type{<:typeof(CounterfactualExplanations.Evaluation.evaluate)},
+)
+    return TaijaBase.IsParallel()
 end
