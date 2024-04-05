@@ -14,7 +14,7 @@ Return a vector of `n` integers which are approximately equally sized and sum to
 """
 function split_count(N::Integer, n::Integer)
     q, r = divrem(N, n)
-    return [i <= r ? q + 1 : q for i in 1:n]
+    return [i <= r ? q + 1 : q for i = 1:n]
 end
 
 """
@@ -23,9 +23,9 @@ end
 Return a vector of vectors of `obs` split by `counts`.
 """
 function split_by_counts(obs::AbstractVector, counts::AbstractVector)
-    _start = cumsum([1; counts[1:(end - 1)]])
+    _start = cumsum([1; counts[1:(end-1)]])
     _stop = cumsum(counts)
-    return [obs[_start[i]:_stop[i]] for i in 1:length(counts)]
+    return [obs[_start[i]:_stop[i]] for i = 1:length(counts)]
 end
 
 """

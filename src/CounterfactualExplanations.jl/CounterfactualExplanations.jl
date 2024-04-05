@@ -1,6 +1,4 @@
-using CounterfactualExplanations
-using CounterfactualExplanations: generate_counterfactual
-using CounterfactualExplanations.Evaluation: evaluate
+import CounterfactualExplanations
 using Logging
 using ProgressMeter
 

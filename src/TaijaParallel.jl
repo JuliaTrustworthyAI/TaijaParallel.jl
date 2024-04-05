@@ -1,18 +1,22 @@
 module TaijaParallel
 
-export @with_parallelizer, with_parallelizer, ThreadsParallelizer
+# Package extensions:
+using PackageExtensionCompat
+function __init__()
+    @require_extensions
+end
 
-"An abstract type for parallelizers."
-abstract type AbstractParallelizer end
+using Reexport
+using TaijaBase
+
+@reexport import TaijaBase: parallelize, parallelizable, AbstractParallelizer
+export ThreadsParallelizer, IsParallel, NotParallel, ProcessStyle, parallelizable
 
 "The `ThreadsParallelizer` type is used to parallelize the evaluation of a function using `Threads.@threads`."
 struct ThreadsParallelizer <: AbstractParallelizer end
 
 include("utils.jl")
-
-# Traits:
-include("traits/traits.jl")
-export parallelizable, parallelize
+include("traits.jl")
 
 """
     @with_parallelizer(parallelizer, expr)
@@ -53,17 +57,17 @@ macro with_parallelizer(parallelizer, expr)
 
     # Parallelize:
     output = quote
-        if !parallelizable($f)
+        if !TaijaParallel.parallelizable($f)
             throw(AssertionError("$($f) is not a parallelizable process."))
         end
-        output = parallelize(
-            $pllr, $f, $escaped_args...; $aakws...
-        )
+        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; $aakws...)
         output
     end
     return output
 end
 
 include("CounterfactualExplanations.jl/CounterfactualExplanations.jl")
+
+include("extensions/extensions.jl")
 
 end

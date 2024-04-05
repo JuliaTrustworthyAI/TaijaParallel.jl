@@ -2,13 +2,14 @@ module MPIExt
 
 export MPIParallelizer
 
-using TaijaParallel
 using Logging
 using MPI
 using ProgressMeter
+using TaijaBase
+using TaijaParallel
 
 "The `MPIParallelizer` type is used to parallelize the evaluation of a function using `MPI.jl`."
-struct MPIParallelizer <: AbstractParallelizer
+struct MPIParallelizer <: TaijaParallel.AbstractParallelizer
     comm::MPI.Comm
     rank::Int
     n_proc::Int
@@ -22,7 +23,9 @@ end
 Create an `MPIParallelizer` object from an `MPI.Comm` object. Optionally, specify the number of observations to send to each process using `n_each`. If `n_each` is `nothing`, then all observations will be split into equally sized bins and sent to each process. If `threaded` is `true`, then the `MPIParallelizer` will use `Threads.@threads` to further parallelize the evaluation of a function.
 """
 function TaijaParallel.MPIParallelizer(
-    comm::MPI.Comm; n_each::Union{Nothing,Int}=nothing, threaded::Bool=false
+    comm::MPI.Comm;
+    n_each::Union{Nothing,Int} = nothing,
+    threaded::Bool = false,
 )
     rank = MPI.Comm_rank(comm)                          # Rank of this process in the world 🌍
     n_proc = MPI.Comm_size(comm)                        # Number of processes in the world 🌍

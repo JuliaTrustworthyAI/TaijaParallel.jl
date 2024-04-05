@@ -1,5 +1,7 @@
+import TaijaBase
+
 """
-    parallelize(
+    TaijaBase.parallelize(
         parallelizer::ThreadsParallelizer,
         f::typeof(CounterfactualExplanations.Evaluation.evaluate),
         args...;
@@ -8,16 +10,16 @@
 
 Parallelizes the evaluation of `f` using `Threads.@threads`. This function is used to evaluate counterfactual explanations.
 """
-function parallelize(
+function TaijaBase.parallelize(
     parallelizer::ThreadsParallelizer,
     f::typeof(CounterfactualExplanations.Evaluation.evaluate),
     args...;
-    verbose::Bool=true,
+    verbose::Bool = true,
     kwargs...,
 )
 
     # Setup:
-    counterfactuals = args[1] |> x -> CounterfactualExplanations.vectorize_collection(x)
+    counterfactuals = args[1] |> x -> TaijaBase.vectorize_collection(x)
 
     # Get meta data if supplied:
     if length(args) > 1
@@ -28,22 +30,22 @@ function parallelize(
 
     # Check meta data:
     if typeof(meta_data) <: AbstractArray
-        meta_data = CounterfactualExplanations.vectorize_collection(meta_data)
+        meta_data = TaijaBase.vectorize_collection(meta_data)
         @assert length(meta_data) == length(counterfactuals) "The number of meta data must match the number of counterfactuals."
     else
         meta_data = fill(meta_data, length(counterfactuals))
     end
 
     # Preallocate:
-    evaluations = [[] for _ in 1:Threads.nthreads()]
+    evaluations = [[] for _ = 1:Threads.nthreads()]
 
     # Verbosity:
     if verbose
         prog = ProgressMeter.Progress(
             length(counterfactuals);
-            desc="Evaluating counterfactuals ...",
-            showspeed=true,
-            color=:green,
+            desc = "Evaluating counterfactuals ...",
+            showspeed = true,
+            color = :green,
         )
     end
 

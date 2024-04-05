@@ -12,6 +12,3 @@ struct IsParallel <: ProcessStyle end
 parallelizable(x::T) where {T} = parallelizable(ProcessStyle(T), x)
 parallelizable(::IsParallel, x) = true
 parallelizable(::NotParallel, x) = false
-
-# Default behaviour:
-include("parallelize.jl")
