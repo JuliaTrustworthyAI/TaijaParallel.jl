@@ -1,5 +1,11 @@
 module TaijaParallel
 
+# Package extensions:
+using PackageExtensionCompat
+function __init__()
+    @require_extensions
+end
+
 using Reexport
 using TaijaBase
 
