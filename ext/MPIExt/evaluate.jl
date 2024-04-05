@@ -1,5 +1,5 @@
 """
-    parallelize(
+    TaijaBase.parallelize(
         parallelizer::MPIParallelizer,
         f::typeof(CounterfactualExplanations.Evaluation.evaluate),
         args...;
@@ -66,8 +66,12 @@ function TaijaBase.parallelize(
         else
             # Parallelize further with `Threads.@threads`:
             second_parallelizer = ThreadsParallelizer()
-            output =
-                parallelize(second_parallelizer, f, eachcol(worker_chunk)...; kwargs...)
+            output = TaijaBase.parallelize(
+                second_parallelizer,
+                f,
+                eachcol(worker_chunk)...;
+                kwargs...,
+            )
         end
         MPI.Barrier(parallelizer.comm)
 

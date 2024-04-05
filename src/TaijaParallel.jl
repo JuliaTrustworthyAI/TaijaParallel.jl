@@ -60,7 +60,7 @@ macro with_parallelizer(parallelizer, expr)
         if !parallelizable($f)
             throw(AssertionError("$($f) is not a parallelizable process."))
         end
-        output = parallelize($pllr, $f, $escaped_args...; $aakws...)
+        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; $aakws...)
         output
     end
     return output

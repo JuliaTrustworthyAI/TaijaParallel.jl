@@ -1,7 +1,7 @@
 import TaijaBase
 
 """
-    parallelize(
+    TaijaBase.parallelize(
         parallelizer::ThreadsParallelizer,
         f::typeof(CounterfactualExplanations.generate_counterfactual),
         args...;
