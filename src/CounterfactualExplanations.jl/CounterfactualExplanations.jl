@@ -1,4 +1,4 @@
-using CounterfactualExplanations
+import CounterfactualExplanations
 using Logging
 using ProgressMeter
 
