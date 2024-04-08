@@ -9,7 +9,7 @@ end
 using Reexport
 using TaijaBase
 
-@reexport import TaijaBase: parallelize, parallelizable, AbstractParallelizer
+@reexport import TaijaBase: parallelize, AbstractParallelizer
 export ThreadsParallelizer, IsParallel, NotParallel, ProcessStyle, parallelizable
 
 "The `ThreadsParallelizer` type is used to parallelize the evaluation of a function using `Threads.@threads`."
