@@ -21,7 +21,7 @@ MPIExt = "MPI"
 
 [compat]
 Aqua = "0.8"
-CounterfactualExplanations = "0.1"
+CounterfactualExplanations = "0.1, 1"
 Logging = "1.7, 1.8, 1.9, 1.10"
 MLUtils = "0.4.4"
 MPI = "0.20"
