@@ -32,6 +32,9 @@ macro with_parallelizer(parallelizer, expr)
         expr = expr.args[end]
     end
 
+    Meta.show_sexpr(expr)
+    println("")
+
     # Unpack arguments:
     pllr = esc(parallelizer)
     f = esc(expr.args[1])
@@ -53,15 +56,20 @@ macro with_parallelizer(parallelizer, expr)
         end
     end
 
-    # Escape arguments:
     escaped_args = Expr(:tuple, esc.(aargs)...)
+    Meta.show_sexpr(escaped_args)
+    println("")
+    escaped_kws = :([$([Pair(k, esc(v)) for (k, v) in aakws]...)])
+    Meta.show_sexpr(escaped_kws)
 
     # Parallelize:
     output = quote
         if !TaijaParallel.parallelizable($f)
             throw(AssertionError("$($f) is not a parallelizable process."))
+        else
+            @info "Parallelizing with $($pllr)"
         end
-        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; $aakws...)
+        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; $escaped_kws...)
         output
     end
     return output
