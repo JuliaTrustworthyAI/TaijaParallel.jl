@@ -59,8 +59,8 @@ macro with_parallelizer(parallelizer, expr)
     escaped_args = Expr(:tuple, esc.(aargs)...)
     Meta.show_sexpr(escaped_args)
     println("")
-    escaped_kws = :([$([Pair(k, esc(v)) for (k, v) in aakws]...)])
-    Meta.show_sexpr(escaped_kws)
+    println("")
+    Meta.show_sexpr(aakws)
 
     # Parallelize:
     output = quote
@@ -69,7 +69,7 @@ macro with_parallelizer(parallelizer, expr)
         else
             @info "Parallelizing with $($pllr)"
         end
-        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; $escaped_kws...)
+        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; $aakws...)
         output
     end
     return output
