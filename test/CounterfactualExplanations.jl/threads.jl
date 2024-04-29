@@ -1,4 +1,5 @@
 using CounterfactualExplanations
+using CounterfactualExplanations.Convergence
 using TaijaData
 using TaijaParallel: ThreadsParallelizer, @with_parallelizer
 
@@ -11,6 +12,7 @@ counterfactual_data =
                 data[2],
             )
 M = fit_model(counterfactual_data, :MLP)
+conv = DecisionThresholdConvergence(decision_threshold = 0.95)
 generator = GenericGenerator()
 factual = 1
 target = 2
@@ -19,7 +21,7 @@ xs = select_factual(counterfactual_data, chosen)
 
 parallelizer = ThreadsParallelizer()
 ces = @with_parallelizer parallelizer begin
-    generate_counterfactual(xs, target, counterfactual_data, M, generator)
+    generate_counterfactual(xs, target, counterfactual_data, M, generator; convergence = conv)
 end
 
 @test true

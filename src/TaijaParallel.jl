@@ -32,6 +32,9 @@ macro with_parallelizer(parallelizer, expr)
         expr = expr.args[end]
     end
 
+    Meta.show_sexpr(expr)
+    println("")
+
     # Unpack arguments:
     pllr = esc(parallelizer)
     f = esc(expr.args[1])
@@ -39,29 +42,37 @@ macro with_parallelizer(parallelizer, expr)
 
     # Split args into positional and keyword arguments:
     aargs = []
-    aakws = Pair{Symbol,Any}[]
+    kwargs_names = []
+    kwargs_values = []
     for el in args
         if Meta.isexpr(el, :parameters)
             for kw in el.args
                 k = kw.args[1]      # parameter name
                 v = kw.args[2]      # parameter value
-                v = typeof(v) == QuoteNode ? v.value : v
-                push!(aakws, Pair(k, v))
+                # v = typeof(v) == QuoteNode ? v.value : v
+                push!(kwargs_names, k)
+                push!(kwargs_values, v)
             end
         else
             push!(aargs, el)
         end
     end
 
-    # Escape arguments:
+    # Escape arguments and create a tuple:
     escaped_args = Expr(:tuple, esc.(aargs)...)
+    kwargs_names = tuple(kwargs_names...)
+    sym = QuoteNode.(kwargs_names)
+    kwargs_values = tuple(kwargs_values...)
 
     # Parallelize:
     output = quote
         if !TaijaParallel.parallelizable($f)
             throw(AssertionError("$($f) is not a parallelizable process."))
+        else
+            @info "Parallelizing with $($pllr)"
         end
-        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; $aakws...)
+        escaped_kwargs = $NamedTuple{($(sym...),)}(($(esc.(kwargs_values)...),))
+        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; escaped_kwargs...)
         output
     end
     return output
