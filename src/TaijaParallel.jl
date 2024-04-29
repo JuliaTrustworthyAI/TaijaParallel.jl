@@ -60,9 +60,9 @@ macro with_parallelizer(parallelizer, expr)
 
     # Escape arguments and create a tuple:
     escaped_args = Expr(:tuple, esc.(aargs)...)
-    kwargs_names = tuple(kwargs_names...,)
+    kwargs_names = tuple(kwargs_names...)
     sym = QuoteNode.(kwargs_names)
-    kwargs_values = tuple(kwargs_values...,)
+    kwargs_values = tuple(kwargs_values...)
 
     # Parallelize:
     output = quote
@@ -71,8 +71,8 @@ macro with_parallelizer(parallelizer, expr)
         else
             @info "Parallelizing with $($pllr)"
         end
-        escaped_kwargs = $NamedTuple{($(sym...),)}(($(esc.(kwargs_values)...),)) 
-        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; escaped_kwargs...) 
+        escaped_kwargs = $NamedTuple{($(sym...),)}(($(esc.(kwargs_values)...),))
+        output = TaijaBase.parallelize($pllr, $f, $escaped_args...; escaped_kwargs...)
         output
     end
     return output

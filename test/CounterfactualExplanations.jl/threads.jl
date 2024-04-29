@@ -21,10 +21,7 @@ xs = select_factual(counterfactual_data, chosen)
 
 parallelizer = ThreadsParallelizer()
 ces = @with_parallelizer parallelizer begin
-    generate_counterfactual(
-        xs, target, counterfactual_data, M, generator; 
-        convergence=conv
-    )
+    generate_counterfactual(xs, target, counterfactual_data, M, generator; convergence = conv)
 end
 
 @test true
