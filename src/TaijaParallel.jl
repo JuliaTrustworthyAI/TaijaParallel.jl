@@ -58,17 +58,11 @@ macro with_parallelizer(parallelizer, expr)
         end
     end
 
+    # Escape arguments and create a tuple:
     escaped_args = Expr(:tuple, esc.(aargs)...)
-
     kwargs_names = tuple(kwargs_names...,)
     sym = QuoteNode.(kwargs_names)
-    Meta.show_sexpr(sym)
-    println("")
-
     kwargs_values = tuple(kwargs_values...,)
-    Meta.show_sexpr(kwargs_values)
-    println("")
-    
 
     # Parallelize:
     output = quote
