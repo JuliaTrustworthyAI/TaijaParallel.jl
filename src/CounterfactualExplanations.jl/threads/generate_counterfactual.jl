@@ -28,34 +28,41 @@ function TaijaBase.parallelize(
     # Break down into chunks:
     args = zip(counterfactuals, target, data, M, generator)
 
-    # Preallocate:
-    ces = [
-        Vector{CounterfactualExplanations.AbstractCounterfactualExplanation}() for
-        _ = 1:Threads.nthreads()
-    ]
+    # Preallocate a vector for storing results in the original order
+    ces = Vector{CounterfactualExplanations.AbstractCounterfactualExplanation}(undef, length(args))
 
-    # Verbosity:
+    # Verbosity setup:
     if verbose
         prog = ProgressMeter.Progress(
             length(args);
-            desc = "Generating counterfactuals ...",
-            showspeed = true,
-            color = :green,
+            desc="Generating counterfactuals ...",
+            showspeed=true,
+            color=:green,
         )
     end
 
-    # Training:  
-    Threads.@threads :static for (x, target, data, M, generator) in collect(args)
-        ce = with_logger(NullLogger()) do
-            f(x, target, data, M, generator; kwargs...)
+    # Training: Use @spawn to dynamically schedule tasks
+    tasks = []
+
+    # Iterate with index to preserve order
+    for (i, (x, target, data, M, generator)) in enumerate(args)
+        # Each task will execute this function dynamically on an available thread
+        task = Threads.@spawn begin
+            ce = with_logger(NullLogger()) do
+                f(x, target, data, M, generator; kwargs...)
+            end
+            ces[i] = ce  # Store result in the correct position
+            if verbose
+                ProgressMeter.next!(prog)
+            end
         end
-        push!(ces[Threads.threadid()], ce)
-        if verbose
-            ProgressMeter.next!(prog)
-        end
+        push!(tasks, task)
     end
 
-    ces = reduce(vcat, ces)
+    # Wait for all tasks to complete
+    for task in tasks
+        fetch(task)
+    end
 
     return ces
 end
