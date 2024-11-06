@@ -1,5 +1,7 @@
 using CounterfactualExplanations
 using CounterfactualExplanations.Convergence
+using CounterfactualExplanations.Evaluation
+using CounterfactualExplanations.Models
 using TaijaData
 using TaijaParallel: ThreadsParallelizer, @with_parallelizer
 
@@ -22,6 +24,12 @@ xs = select_factual(counterfactual_data, chosen)
 parallelizer = ThreadsParallelizer()
 ces = @with_parallelizer parallelizer begin
     generate_counterfactual(xs, target, counterfactual_data, M, generator; convergence = conv)
+end
+
+@test all(CounterfactualExplanations.factual.(ces) .== (x -> x[1]).(collect(xs)))
+
+evals = @with_parallelizer parallelizer begin
+    evaluate(ces)
 end
 
 @test true

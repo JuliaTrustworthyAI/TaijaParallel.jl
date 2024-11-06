@@ -36,8 +36,11 @@ function TaijaBase.parallelize(
         meta_data = fill(meta_data, length(counterfactuals))
     end
 
+    # Bundle arguments:
+    args = zip(counterfactuals, meta_data)
+
     # Preallocate:
-    evaluations = [[] for _ = 1:Threads.nthreads()]
+    evaluations = Vector{Vector}(undef, length(args))
 
     # Verbosity:
     if verbose
@@ -49,16 +52,26 @@ function TaijaBase.parallelize(
         )
     end
 
-    # Bundle arguments:
-    args = zip(counterfactuals, meta_data)
+    # Training: Use @spawn to dynamically schedule tasks
+    tasks = []
 
-    Threads.@threads :static for (ce, meta) in collect(args)
-        push!(evaluations[Threads.threadid()], f(ce, meta; kwargs...))
-        if verbose
-            ProgressMeter.next!(prog)
+    # Iterate with index to preserve order
+    for (i, (ce, meta)) in enumerate(args)
+        # Each task will execute this function dynamically on an available thread
+        task = Threads.@spawn begin
+            evaluation = f(ce, meta; kwargs...)
+            evaluations[i] = evaluation         # Store result in the correct position
+            if verbose
+                ProgressMeter.next!(prog)
+            end
         end
+        push!(tasks, task)
     end
-    evaluations = reduce(vcat, evaluations)
+
+    # Wait for all tasks to complete
+    for task in tasks
+        fetch(task)
+    end
 
     return evaluations
 end

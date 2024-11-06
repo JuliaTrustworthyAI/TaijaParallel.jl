@@ -1,6 +1,5 @@
 using CounterfactualExplanations.DataPreprocessing: CounterfactualData
 using CounterfactualExplanations.Evaluation: benchmark
-using LaplaceRedux
 using Logging
 using TaijaData
 using TaijaParallel
