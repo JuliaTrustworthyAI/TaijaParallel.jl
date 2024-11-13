@@ -1,7 +1,7 @@
 name = "TaijaParallel"
 uuid = "bf1c2c22-5e42-4e78-8b6b-92e6c673eeb0"
 authors = ["Patrick Altmeyer <p.altmeyer@tudelft.nl>"]
-version = "1.1.0"
+version = "1.1.1"
 
 [deps]
 CounterfactualExplanations = "2f13d31b-18db-44c1-bc43-ebaf2cff0be0"
