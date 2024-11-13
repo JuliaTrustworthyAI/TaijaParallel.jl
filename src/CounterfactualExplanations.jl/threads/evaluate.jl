@@ -40,7 +40,7 @@ function TaijaBase.parallelize(
     args = zip(counterfactuals, meta_data)
 
     # Preallocate:
-    evaluations = Vector{Vector}(undef, length(args))
+    evaluations = Vector(undef, length(args))
 
     # Verbosity:
     if verbose
