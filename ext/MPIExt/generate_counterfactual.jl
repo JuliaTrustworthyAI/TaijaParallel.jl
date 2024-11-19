@@ -84,6 +84,9 @@ function TaijaBase.parallelize(
         MPI.Barrier(parallelizer.comm)
     end
 
+    # Collect all chunks in rank 0:
+    MPI.Barrier(parallelizer.comm)
+
     # Load output from rank 0:
     if parallelizer.rank == 0
         outputs = []
