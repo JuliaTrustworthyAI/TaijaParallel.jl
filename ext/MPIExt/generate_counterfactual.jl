@@ -100,8 +100,10 @@ function TaijaBase.parallelize(
         output = []
         for i = 1:length(chunks)
             batch = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
+            @info "Rank $(parallelizer.rank): Batch $i has length: $(length(batch))"
             output = vcat(output..., batch...)
         end
+        @info "Rank $(parallelizer.rank): Length of loaded output: $(length(output))"
     else
         output = nothing
     end
