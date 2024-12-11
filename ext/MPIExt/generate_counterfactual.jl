@@ -81,11 +81,11 @@ function TaijaBase.parallelize(
         MPI.Barrier(parallelizer.comm)
 
         # Collect output from all processe in rank 0:
-        @info "Rank $parallelizer.rank: Collecting output ..."
+        @info "Rank $(parallelizer.rank): Collecting output ..."
         collected_output = MPI.gather(output, parallelizer.comm)
-        collected_output = filter(!isnothing, collected_output)
         if parallelizer.rank == 0
             output = vcat(collected_output...)
+            output = filter(!isnothing, output)
             Serialization.serialize(joinpath(storage_path, "output_$i.jls"), output)
         end
         MPI.Barrier(parallelizer.comm)
