@@ -45,8 +45,8 @@ function TaijaBase.parallelize(
     for (i, chunk) in enumerate(chunks)
         worker_chunk = TaijaParallel.split_obs(chunk, parallelizer.n_proc)
         worker_chunk = MPI.scatter(worker_chunk, parallelizer.comm)
-        worker_chunk = stack(worker_chunk; dims = 1)
         if !isempty(worker_chunk)
+            worker_chunk = stack(worker_chunk; dims=1)
             if !parallelizer.threaded
                 if parallelizer.rank == 0 && verbose
                     # Generating counterfactuals with progress bar:
