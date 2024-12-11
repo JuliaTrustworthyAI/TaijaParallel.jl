@@ -110,6 +110,7 @@ function TaijaBase.parallelize(
     end
 
     # Broadcast output to all processes:
+    @info "Rank $(parallelizer.rank): Broadcasting output ..."
     final_output = MPI.bcast(output, parallelizer.comm; root = 0)
     MPI.Barrier(parallelizer.comm)
 
