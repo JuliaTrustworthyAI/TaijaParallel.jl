@@ -103,7 +103,8 @@ function TaijaBase.parallelize(
         output = []
         for i = 1:length(chunks)
             batch = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
-            output = vcat(output..., batch)
+            @info "Batch shape: $(size(batch))"
+            output = vcat(output..., batch...)
         end
     else
         output = nothing
