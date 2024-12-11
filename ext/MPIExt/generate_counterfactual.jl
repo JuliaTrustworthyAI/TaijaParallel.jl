@@ -104,7 +104,7 @@ function TaijaBase.parallelize(
         # Collect output from all processes in rank 0:
         output = vcat(outputs...)
         output = filter(!isnothing, output)
-        println(output)
+        @show output
     else
         output = nothing
     end
