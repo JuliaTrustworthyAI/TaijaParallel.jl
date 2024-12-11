@@ -38,6 +38,8 @@ function TaijaBase.parallelize(
         chunks = [collect(args)]
     end
 
+    @info "Rank $(parallelizer.rank): Total number of chunks: $(length(chunks))"
+
     # Setup:
     storage_path = tempdir()
 
@@ -100,7 +102,7 @@ function TaijaBase.parallelize(
         output = []
         for i = 1:length(chunks)
             batch = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
-            @info "Rank $(parallelizer.rank): Batch $i has length: $(length(batch))"
+            @info "Rank $(parallelizer.rank): Batch ($i/$(length(chunks))) has length: $(length(batch))"
             output = vcat(output..., batch...)
         end
         @info "Rank $(parallelizer.rank): Length of loaded output: $(length(output))"
@@ -118,7 +120,7 @@ function TaijaBase.parallelize(
         if parallelizer.rank == 0
             @info "Rank $(parallelizer.rank): Broadcasting output ($i/$num_outputs) to all processes ..."
             batch = output[i]
-            @info "Batch shape: $(size(batch))"
+            @info "Batch shape: $(length(batch))"
             batch = MPI.bcast(batch, parallelizer.comm; root = 0)
         else
             batch = MPI.bcast(nothing, parallelizer.comm; root=0)
