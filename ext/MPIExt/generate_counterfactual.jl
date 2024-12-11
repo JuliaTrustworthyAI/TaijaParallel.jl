@@ -86,37 +86,28 @@ function TaijaBase.parallelize(
         if parallelizer.rank == 0
             output = vcat(collected_output...)
             output = filter(!isnothing, output)
-            @info "Rank $(parallelizer.rank): Output collected: $(length(output))"
-            @show output
             Serialization.serialize(joinpath(storage_path, "output_$i.jls"), output)
         end
         MPI.Barrier(parallelizer.comm)
     end
 
-    # Collect all chunks in rank 0:
     MPI.Barrier(parallelizer.comm)
 
     # Load output from rank 0:
     if parallelizer.rank == 0
         outputs = []
-        @info "Rank $(parallelizer.rank): Deserializing ..."
         for i = 1:length(chunks)
             output = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
             push!(outputs, output)
         end
         # Collect output from all processes in rank 0:
         output = vcat(outputs...)
-        output = filter(!isnothing, output)
     else
         output = nothing
     end
 
-    MPI.Barrier(parallelizer.comm)
-
     # Broadcast output to all processes:
-    @info "Rank $(parallelizer.rank): Broadcasting output ..."
     final_output = MPI.bcast(output, parallelizer.comm; root = 0)
-    @info "Rank $(parallelizer.rank): Output broadcasted!"
     MPI.Barrier(parallelizer.comm)
 
     return final_output

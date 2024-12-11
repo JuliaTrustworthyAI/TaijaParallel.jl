@@ -75,7 +75,7 @@ function TaijaBase.parallelize(
                 )
             end
         else
-            @info "No data to process for worker $(parallelizer.rank)"
+            @info "No data to evaluate for worker $(parallelizer.rank)"
             output = nothing
         end
         MPI.Barrier(parallelizer.comm)
