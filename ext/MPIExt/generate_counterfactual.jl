@@ -94,71 +94,35 @@ function TaijaBase.parallelize(
     MPI.Barrier(parallelizer.comm)
 
     # Load output from rank 0:
-    outputs = []
-    @info "Rank $(parallelizer.rank): Loading output ..."
     if parallelizer.rank == 0
+        outputs = []
         for i = 1:length(chunks)
             output = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
             push!(outputs, output)
         end
+        # Collect output from all processes in rank 0:
+        output = vcat(outputs...)
     else
-        for i = 1:length(chunks)
-            push!(outputs, nothing)
-        end
+        output = nothing
     end
 
-    @info "Rank $(parallelizer.rank): Broadcasting output to all processes ..."
-    for (i,output) in enumerate(outputs)
-        # Broadcast in chunks:
+    # Broadcast total number of outputs first
+    num_outputs = parallelizer.rank == 0 ? length(output) : 0
+    num_outputs = MPI.bcast(num_outputs, parallelizer.comm; root=0)
+
+    # Broadcast each output
+    final_output = []
+    for i = 1:num_outputs
         if parallelizer.rank == 0
-            @info "Rank $(parallelizer.rank): Broadcasting chunk $i to all processes ..."
-            @info "Length of output: $(length(output)) ..."
+            @info "Rank $(parallelizer.rank): Broadcasting output ($i/$num_outputs) to all processes ..."
+            output = MPI.bcast(outputs[i], parallelizer.comm; root = 0)
+            push!(final_output, output)
+        else
+            output = MPI.bcast(nothing, parallelizer.comm; root=0)
         end
-        broadcasted_output = MPI.bcast(output, parallelizer.comm; root = 0)
-        outputs[i] = broadcasted_output
     end
-
-    # Collect output from all processes in rank 0:
-    final_output = vcat(outputs...)
 
     MPI.Barrier(parallelizer.comm)
 
     return final_output
-end
-
-# Chunked broadcasting function
-function chunked_broadcast(data, comm; root=0, chunk_size=1_000_000)
-    # On root process, determine the total size and type
-    if MPI.Comm_rank(comm) == root
-        total_size = length(data)
-        data_type = eltype(data)
-    else
-        total_size = zero(Int)
-        data_type = nothing
-    end
-
-    # Broadcast total size and data type
-    total_size = MPI.bcast(total_size, comm; root=root)
-    data_type = MPI.bcast(data_type, comm; root=root)
-
-    # Preallocate output array on non-root processes
-    if MPI.Comm_rank(comm) != root
-        output = Vector{data_type}(undef, total_size)
-    end
-
-    # Broadcast in chunks
-    for start in 1:chunk_size:total_size
-        end_idx = min(start + chunk_size - 1, total_size)
-
-        if MPI.Comm_rank(comm) == root
-            chunk = data[start:end_idx]
-        else
-            chunk = view(output, start:end_idx)
-        end
-
-        MPI.bcast!(chunk, comm; root=root)
-    end
-
-    # Return the full output on non-root processes
-    return MPI.Comm_rank(comm) == root ? data : output
 end
