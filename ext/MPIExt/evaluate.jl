@@ -48,7 +48,7 @@ function TaijaBase.parallelize(
         if !isempty(worker_chunk)
             worker_chunk = stack(worker_chunk; dims=1)
             @info "Rank $(parallelizer.rank) is evaluating $(length(worker_chunk)) samples..."
-            @info "Rank $(parallelizer.rank) using multi-threading: parallelizer.threaded"
+            @info "Rank $(parallelizer.rank) using multi-threading: $(parallelizer.threaded)"
             if !parallelizer.threaded
                 if parallelizer.rank == 0 && verbose
                     # Generating counterfactuals with progress bar:
@@ -125,6 +125,8 @@ function TaijaBase.parallelize(
             batch = MPI.bcast(nothing, parallelizer.comm; root=0)
         end
     end
+
+    @info "Rank $(parallelizer.rank): Final output shape: $(size(final_output))"
 
     MPI.Barrier(parallelizer.comm)
 
