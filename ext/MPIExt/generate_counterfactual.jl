@@ -110,7 +110,7 @@ function TaijaBase.parallelize(
     @info "Rank $(parallelizer.rank): Broadcasting output to all processes ..."
     for (i,output) in enumerate(outputs)
         # Broadcast in chunks:
-        broadcasted_output = MPI.broadcast(output, parallelizer.comm; root = 0)
+        broadcasted_output = MPI.bcast(output, parallelizer.comm; root = 0)
         outputs[i] = broadcasted_output
     end
 
