@@ -101,7 +101,7 @@ function TaijaBase.parallelize(
             push!(outputs, output)
         end
         # Collect output from all processes in rank 0:
-        output = vcat(outputs...)
+        output = reduce(vcat, outputs)
     else
         output = nothing
     end
@@ -115,10 +115,11 @@ function TaijaBase.parallelize(
     for i = 1:num_outputs
         if parallelizer.rank == 0
             @info "Rank $(parallelizer.rank): Broadcasting output ($i/$num_outputs) to all processes ..."
-            output = MPI.bcast(outputs[i], parallelizer.comm; root = 0)
-            push!(final_output, output)
+            batch = output[i]
+            batch = MPI.bcast(batch, parallelizer.comm; root = 0)
+            push!(final_output, batch)
         else
-            output = MPI.bcast(nothing, parallelizer.comm; root=0)
+            batch = MPI.bcast(nothing, parallelizer.comm; root=0)
         end
     end
 
