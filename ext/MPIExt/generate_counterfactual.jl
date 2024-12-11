@@ -120,7 +120,7 @@ function TaijaBase.parallelize(
         if parallelizer.rank == 0
             @info "Rank $(parallelizer.rank): Broadcasting output ($i/$num_outputs) to all processes ..."
             batch = output[i]
-            @info "Batch shape: $(length(batch))"
+            @info "Batch size: $(sizeof(batch)/1000)"
             batch = MPI.bcast(batch, parallelizer.comm; root = 0)
         else
             batch = MPI.bcast(nothing, parallelizer.comm; root=0)
