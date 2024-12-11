@@ -84,8 +84,10 @@ function TaijaBase.parallelize(
         @info "Rank $(parallelizer.rank): Collecting output ..."
         collected_output = MPI.gather(output, parallelizer.comm)
         if parallelizer.rank == 0
-            output = vcat(collected_output...)
+            @info "Rank $(parallelizer.rank): length of collected_output: $(length(collected_output))"
+            output = reduce(vcat, collected_output)
             output = filter(!isnothing, output)
+            @info "Rank $(parallelizer.rank): Length of filtered output: $(length(output))"
             Serialization.serialize(joinpath(storage_path, "output_$i.jls"), output)
         end
         # MPI.Barrier(parallelizer.comm)
@@ -98,7 +100,6 @@ function TaijaBase.parallelize(
         output = []
         for i = 1:length(chunks)
             batch = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
-            @info "Batch shape: $(size(batch))"
             output = vcat(output..., batch...)
         end
     else
