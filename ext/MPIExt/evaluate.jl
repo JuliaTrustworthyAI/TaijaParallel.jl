@@ -47,6 +47,7 @@ function TaijaBase.parallelize(
         worker_chunk = MPI.scatter(worker_chunk, parallelizer.comm)
         if !isempty(worker_chunk)
             worker_chunk = stack(worker_chunk; dims=1)
+            @info "Rank $(parallelizer.rank) is evaluating $(length(worker_chunk)) samples..."
             if !parallelizer.threaded
                 if parallelizer.rank == 0 && verbose
                     # Generating counterfactuals with progress bar:
@@ -78,6 +79,7 @@ function TaijaBase.parallelize(
             @info "No data to evaluate for worker $(parallelizer.rank)"
             output = nothing
         end
+        @info "Rank $(parallelizer.rank): Output generated and gathered. Waiting at barrier ..."
         MPI.Barrier(parallelizer.comm)
 
         # Collect output from all processe in rank 0:
@@ -88,7 +90,7 @@ function TaijaBase.parallelize(
             output = filter(!isnothing, output)
             Serialization.serialize(joinpath(storage_path, "output_$i.jls"), output)
         end
-        MPI.Barrier(parallelizer.comm)
+        # MPI.Barrier(parallelizer.comm)
     end
 
     # Collect all chunks in rank 0:
@@ -96,19 +98,32 @@ function TaijaBase.parallelize(
 
     # Load output from rank 0:
     if parallelizer.rank == 0
-        outputs = []
+        output = []
         for i = 1:length(chunks)
-            output = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
-            push!(outputs, output)
+            batch = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
+            output = vcat(output..., batch)
         end
-        # Collect output from all processes in rank 0:
-        output = vcat(outputs...)
     else
         output = nothing
     end
 
-    # Broadcast output to all processes:
-    final_output = MPI.bcast(output, parallelizer.comm; root = 0)
+    # Broadcast total number of outputs first
+    num_outputs = parallelizer.rank == 0 ? length(output) : 0
+    num_outputs = MPI.bcast(num_outputs, parallelizer.comm; root=0)
+
+    # Broadcast each output
+    final_output = []
+    for i = 1:num_outputs
+        if parallelizer.rank == 0
+            @info "Rank $(parallelizer.rank): Broadcasting output ($i/$num_outputs) to all processes ..."
+            batch = output[i]
+            batch = MPI.bcast(batch, parallelizer.comm; root=0)
+            push!(final_output, batch)
+        else
+            batch = MPI.bcast(nothing, parallelizer.comm; root=0)
+        end
+    end
+
     MPI.Barrier(parallelizer.comm)
 
     return final_output
