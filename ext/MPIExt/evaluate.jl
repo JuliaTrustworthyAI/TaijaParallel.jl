@@ -48,6 +48,7 @@ function TaijaBase.parallelize(
         if !isempty(worker_chunk)
             worker_chunk = stack(worker_chunk; dims=1)
             @info "Rank $(parallelizer.rank) is evaluating $(length(worker_chunk)) samples..."
+            @info "Rank $(parallelizer.rank) using multi-threading: parallelizer.threaded"
             if !parallelizer.threaded
                 if parallelizer.rank == 0 && verbose
                     # Generating counterfactuals with progress bar:
@@ -75,6 +76,7 @@ function TaijaBase.parallelize(
                     kwargs...,
                 )
             end
+            @info "Rank $(parallelizer.rank): Output generated. Gathering ..."
         else
             @info "No data to evaluate for worker $(parallelizer.rank)"
             output = nothing
