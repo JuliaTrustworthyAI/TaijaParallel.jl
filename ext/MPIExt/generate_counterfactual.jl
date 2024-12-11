@@ -88,7 +88,7 @@ function TaijaBase.parallelize(
             output = filter(!isnothing, output)
             Serialization.serialize(joinpath(storage_path, "output_$i.jls"), output)
         end
-        MPI.Barrier(parallelizer.comm)
+        # MPI.Barrier(parallelizer.comm)
     end
 
     MPI.Barrier(parallelizer.comm)
