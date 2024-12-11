@@ -45,33 +45,38 @@ function TaijaBase.parallelize(
     for (i, chunk) in enumerate(chunks)
         worker_chunk = TaijaParallel.split_obs(chunk, parallelizer.n_proc)
         worker_chunk = MPI.scatter(worker_chunk, parallelizer.comm)
-        worker_chunk = stack(worker_chunk; dims = 1)
-        if !parallelizer.threaded
-            if parallelizer.rank == 0 && verbose
-                # Generating counterfactuals with progress bar:
-                output = []
-                @showprogress desc = "Generating counterfactuals ..." for x in zip(
-                    eachcol(worker_chunk)...,
-                )
-                    with_logger(NullLogger()) do
-                        push!(output, f(x...; kwargs...))
+        if !isempty(worker_chunk)
+            worker_chunk = stack(worker_chunk; dims = 1)
+            if !parallelizer.threaded
+                if parallelizer.rank == 0 && verbose
+                    # Generating counterfactuals with progress bar:
+                    output = []
+                    @showprogress desc = "Generating counterfactuals ..." for x in zip(
+                        eachcol(worker_chunk)...,
+                    )
+                        with_logger(NullLogger()) do
+                            push!(output, f(x...; kwargs...))
+                        end
+                    end
+                else
+                    # Generating counterfactuals without progress bar:
+                    output = with_logger(NullLogger()) do
+                        f.(eachcol(worker_chunk)...; kwargs...)
                     end
                 end
             else
-                # Generating counterfactuals without progress bar:
-                output = with_logger(NullLogger()) do
-                    f.(eachcol(worker_chunk)...; kwargs...)
-                end
+                # Parallelize further with `Threads.@threads`:
+                second_parallelizer = ThreadsParallelizer()
+                output = TaijaBase.parallelize(
+                    second_parallelizer,
+                    f,
+                    eachcol(worker_chunk)...;
+                    kwargs...,
+                )
             end
         else
-            # Parallelize further with `Threads.@threads`:
-            second_parallelizer = ThreadsParallelizer()
-            output = TaijaBase.parallelize(
-                second_parallelizer,
-                f,
-                eachcol(worker_chunk)...;
-                kwargs...,
-            )
+            @info "No data to process for worker $(parallelizer.rank)"
+            output = []
         end
         MPI.Barrier(parallelizer.comm)
 
