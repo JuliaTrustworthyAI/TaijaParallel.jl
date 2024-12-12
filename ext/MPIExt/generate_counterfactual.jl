@@ -47,7 +47,9 @@ function TaijaBase.parallelize(
     # For each chunk:
     for (i, chunk) in enumerate(chunks)
         worker_chunk = TaijaParallel.split_obs(chunk, parallelizer.n_proc)
+        @info "Rank $(parallelizer.rank): Number elements in `worker_chunk`: $(length(worker_chunk)). Scattering ..."
         worker_chunk = MPI.scatter(worker_chunk, parallelizer.comm)
+        @info "Generating ..."
         if !isempty(worker_chunk)
             worker_chunk = stack(worker_chunk; dims = 1)
             if !parallelizer.threaded
@@ -81,6 +83,7 @@ function TaijaBase.parallelize(
             @info "No data to process for worker $(parallelizer.rank)"
             output = nothing
         end
+        @info "Rank $(parallelizer.rank) waiting at barrier ..."
         MPI.Barrier(parallelizer.comm)
 
         # Collect output from all processe in rank 0:
