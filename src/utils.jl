@@ -40,5 +40,6 @@ function split_obs(obs::AbstractVector, n::Integer)
 end
 
 function meminfo_julia()
-    @info "Max. RSS: $(round(Sys.maxrss() / 2^20; digits=3)) MiB"
+    @info "GC live:     $(round(Base.gc_live_bytes() / 2^20; digits=3)) MiB"
+    @info "Max. RSS:    $(round(Sys.maxrss() / 2^20; digits=3)) MiB"
 end
