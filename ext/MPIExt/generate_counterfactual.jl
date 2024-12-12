@@ -50,6 +50,8 @@ function TaijaBase.parallelize(
         worker_chunk = TaijaParallel.split_obs(chunk, parallelizer.n_proc)
         @info "Rank $(parallelizer.rank): Number elements in `worker_chunk`: $(length(worker_chunk)). Scattering ..."
         worker_chunk = MPI.scatter(worker_chunk, parallelizer.comm)
+        @info "Rank $(parallelizer.rank) waiting at barrier ..."
+        MPI.Barrier(parallelizer.comm)
         @info "Rank $(parallelizer.rank): Generating ..."
         if !isempty(worker_chunk)
             worker_chunk = stack(worker_chunk; dims = 1)
