@@ -19,6 +19,8 @@ struct ThreadsParallelizer <: AbstractParallelizer end
 include("utils.jl")
 include("traits.jl")
 
+export meminfo_julia
+
 """
     @with_parallelizer(parallelizer, expr)
 

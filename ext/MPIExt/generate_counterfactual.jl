@@ -39,6 +39,7 @@ function TaijaBase.parallelize(
     end
 
     @info "Rank $(parallelizer.rank): Total number of chunks: $(length(chunks))"
+    meminfo_julia()
 
     # Setup:
     storage_path = tempdir()
