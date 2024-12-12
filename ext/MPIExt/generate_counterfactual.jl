@@ -121,6 +121,7 @@ function TaijaBase.parallelize(
         if parallelizer.rank == 0
             batch = output[i]
             @info "Batch size: $(sizeof(batch)/1000)"
+            meminfo_julia()
             @info "Rank $(parallelizer.rank): Broadcasting output ($i/$num_outputs) to all processes ..."
             batch = MPI.bcast(batch, parallelizer.comm; root = 0)
         else
