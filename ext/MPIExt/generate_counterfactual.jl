@@ -39,7 +39,7 @@ function TaijaBase.parallelize(
     end
 
     # Setup:
-    storage_path = tempdir()
+    storage_path = parallelizer.save_dir
 
     # For each chunk:
     for (i, chunk) in enumerate(chunks)

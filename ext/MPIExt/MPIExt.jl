@@ -15,6 +15,7 @@ struct MPIParallelizer <: TaijaParallel.AbstractParallelizer
     n_proc::Int
     n_each::Union{Nothing,Int}
     threaded::Bool
+    save_dir::String
 end
 
 """
@@ -26,6 +27,7 @@ function TaijaParallel.MPIParallelizer(
     comm::MPI.Comm;
     n_each::Union{Nothing,Int} = nothing,
     threaded::Bool = false,
+    save_dir::String = tempdir()
 )
     rank = MPI.Comm_rank(comm)                          # Rank of this process in the world 🌍
     n_proc = MPI.Comm_size(comm)                        # Number of processes in the world 🌍
@@ -42,7 +44,7 @@ function TaijaParallel.MPIParallelizer(
         end
     end
 
-    return MPIParallelizer(comm, rank, n_proc, n_each, threaded)
+    return MPIParallelizer(comm, rank, n_proc, n_each, threaded, save_dir)
 end
 
 include("generate_counterfactual.jl")
