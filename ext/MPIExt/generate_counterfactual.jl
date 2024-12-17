@@ -39,7 +39,7 @@ function TaijaBase.parallelize(
     end
 
     # Setup:
-    storage_path = mkpath(joinpath(parallelizer.save_dir,parallelizer.rank))
+    storage_path = mkpath(joinpath(parallelizer.save_dir,"rank_$(parallelizer.rank)"))
 
     # For each chunk:
     for (i, chunk) in enumerate(chunks)
@@ -92,7 +92,7 @@ function TaijaBase.parallelize(
     end
     # Collect output from all processes in rank 0:
     output = vcat(outputs...)
-    
+
     MPI.Barrier(parallelizer.comm)
 
     return final_output
