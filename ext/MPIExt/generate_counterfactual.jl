@@ -39,7 +39,7 @@ function TaijaBase.parallelize(
     end
 
     # Setup:
-    storage_path = parallelizer.save_dir
+    storage_path = mkpath(joinpath(parallelizer.save_dir,parallelizer.rank))
 
     # For each chunk:
     for (i, chunk) in enumerate(chunks)
@@ -77,31 +77,22 @@ function TaijaBase.parallelize(
 
         # Collect output from all processe in rank 0:
         collected_output = MPI.gather(output, parallelizer.comm)
-        if parallelizer.rank == 0
-            output = vcat(collected_output...)
-            Serialization.serialize(joinpath(storage_path, "output_$i.jls"), output)
-        end
+        output = vcat(collected_output...)
+        Serialization.serialize(joinpath(storage_path, "output_$i.jls"), output)
         MPI.Barrier(parallelizer.comm)
     end
 
     # Collect all chunks in rank 0:
     MPI.Barrier(parallelizer.comm)
 
-    # Load output from rank 0:
-    if parallelizer.rank == 0
-        outputs = []
-        for i = 1:length(chunks)
-            output = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
-            push!(outputs, output)
-        end
-        # Collect output from all processes in rank 0:
-        output = vcat(outputs...)
-    else
-        output = nothing
+    outputs = []
+    for i = 1:length(chunks)
+        output = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
+        push!(outputs, output)
     end
-
-    # Broadcast output to all processes:
-    final_output = MPI.bcast(output, parallelizer.comm; root = 0)
+    # Collect output from all processes in rank 0:
+    output = vcat(outputs...)
+    
     MPI.Barrier(parallelizer.comm)
 
     return final_output
