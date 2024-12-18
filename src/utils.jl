@@ -38,3 +38,8 @@ function split_obs(obs::AbstractVector, n::Integer)
     N_counts = split_count(N, n)
     return split_by_counts(obs, N_counts)
 end
+
+function meminfo_julia()
+    @debug "GC live:     $(round(Base.gc_live_bytes() / 2^20; digits=3)) MiB"
+    @debug "Max. RSS:    $(round(Sys.maxrss() / 2^20; digits=3)) MiB"
+end
