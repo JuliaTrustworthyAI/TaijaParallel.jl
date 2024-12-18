@@ -50,7 +50,7 @@ function TaijaBase.parallelize(
             if parallelizer.rank == 0 && verbose
                 # Generating counterfactuals with progress bar:
                 output = []
-                @showprogress desc = "Evaluating counterfactuals ..." for x in zip(
+                @showprogress desc = "Evaluating counterfactuals using MPI ..." for x in zip(
                     eachcol(worker_chunk)...,
                 )
                     with_logger(NullLogger()) do

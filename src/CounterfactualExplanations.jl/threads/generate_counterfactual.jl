@@ -35,7 +35,7 @@ function TaijaBase.parallelize(
     if verbose
         prog = ProgressMeter.Progress(
             length(args);
-            desc="Generating counterfactuals ...",
+            desc="Generating counterfactuals using multi-threading ...",
             showspeed=true,
             color=:green,
         )
