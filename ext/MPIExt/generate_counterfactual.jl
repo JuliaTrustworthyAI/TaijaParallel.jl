@@ -28,12 +28,11 @@ function TaijaBase.parallelize(
     target = args[2] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
     @assert !isa(args[3], AbstractArray) "Cannot generate counterfactuals for mutliple datasets in parallel."
     data = args[3]
-    @assert !isa(args[4], AbstractArray) "Cannot generate counterfactuals for mutliple models in parallel."
-    M = args[4]
+    M = args[4] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
     generator = args[5] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
 
     # Break down into chunks:
-    args = zip(counterfactuals, target, generator)
+    args = zip(counterfactuals, target, M, generator)
     if !isnothing(n_each)
         chunks = chunk_obs(args, n_each, parallelizer.n_proc)
     else
@@ -48,13 +47,13 @@ function TaijaBase.parallelize(
         worker_chunk = TaijaParallel.split_obs(chunk, parallelizer.n_proc)
         worker_chunk = MPI.scatter(worker_chunk, parallelizer.comm)
         worker_chunk = stack(worker_chunk; dims = 1)
-        _x, _target, _generator = eachcol(worker_chunk)
+        _x, _target, _M, _generator = eachcol(worker_chunk)
         if !parallelizer.threaded
             if parallelizer.rank == 0 && verbose
                 # Generating counterfactuals with progress bar:
                 output = []
                 @showprogress desc = "Generating counterfactuals using MPI ..." for x in zip(
-                    _x, _target, fill(data, length(_generator)), fill(M, length(_generator)), _generator,
+                    _x, _target, fill(data, length(_generator)), _M, _generator,
                 )
                     with_logger(NullLogger()) do
                         push!(output, f(x...; kwargs...))
@@ -63,7 +62,7 @@ function TaijaBase.parallelize(
             else
                 # Generating counterfactuals without progress bar:
                 output = with_logger(NullLogger()) do
-                    f.(_x, _target, data, M, _generator; kwargs...)
+                    f.(_x, _target, data, _M, _generator; kwargs...)
                 end
             end
         else
@@ -72,7 +71,7 @@ function TaijaBase.parallelize(
             output = TaijaBase.parallelize(
                 second_parallelizer,
                 f,
-                _x, _target, data, M, _generator;
+                _x, _target, data, _M, _generator;
                 kwargs...,
             )
         end
