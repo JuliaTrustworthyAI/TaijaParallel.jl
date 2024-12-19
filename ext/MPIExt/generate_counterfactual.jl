@@ -27,7 +27,9 @@ function TaijaBase.parallelize(
     counterfactuals = args[1] |> x -> TaijaBase.vectorize_collection(x)
     target = args[2] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
     @assert !isa(args[3], AbstractArray) "Cannot generate counterfactuals for mutliple datasets in parallel."
+    data = args[3]
     @assert !isa(args[4], AbstractArray) "Cannot generate counterfactuals for mutliple models in parallel."
+    M = args[4]
     generator = args[5] |> x -> isa(x, AbstractArray) ? x : fill(x, length(counterfactuals))
 
     # Break down into chunks:
