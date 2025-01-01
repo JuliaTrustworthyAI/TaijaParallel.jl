@@ -29,7 +29,12 @@ function TaijaBase.parallelize(
     args = zip(counterfactuals, target, data, M, generator)
 
     # Preallocate a vector for storing results in the original order
-    ces = Vector{CounterfactualExplanations.AbstractCounterfactualExplanation}(undef, length(args))
+    return_flattened = get(kwargs, :return_flattened, false)
+    if return_flattened
+        ces = Vector{CounterfactualExplanations.FlattenedCE}(undef, length(args))
+    else
+        ces = Vector{CounterfactualExplanations.CounterfactualExplanation}(undef, length(args))
+    end
 
     # Verbosity setup:
     if verbose
