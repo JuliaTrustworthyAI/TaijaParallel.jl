@@ -15,3 +15,7 @@ end
     end
     @test true
 end
+
+@testset "Comparison" begin
+    include("comparison.jl")
+end
