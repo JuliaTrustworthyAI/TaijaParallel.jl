@@ -32,9 +32,6 @@ macro with_parallelizer(parallelizer, expr)
         expr = expr.args[end]
     end
 
-    Meta.show_sexpr(expr)
-    println("")
-
     # Unpack arguments:
     pllr = esc(parallelizer)
     f = esc(expr.args[1])

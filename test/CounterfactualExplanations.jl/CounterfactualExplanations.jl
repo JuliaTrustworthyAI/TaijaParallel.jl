@@ -17,5 +17,9 @@ end
 end
 
 @testset "Comparison" begin
-    include("comparison.jl")
+    n = nprocs
+    mpiexec() do exe    # MPI wrapper
+        run(`$exe -n $n $(Base.julia_cmd()) CounterfactualExplanations.jl/comparison.jl`)
+    end
+    @test true
 end
