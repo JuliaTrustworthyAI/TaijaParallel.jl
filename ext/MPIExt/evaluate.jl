@@ -70,6 +70,7 @@ function TaijaBase.parallelize(
                 second_parallelizer,
                 f,
                 eachcol(worker_chunk)...;
+                verbose=verbose,
                 kwargs...,
             )
         end

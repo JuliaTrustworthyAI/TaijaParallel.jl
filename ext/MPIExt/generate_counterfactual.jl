@@ -72,6 +72,7 @@ function TaijaBase.parallelize(
                 second_parallelizer,
                 f,
                 _x, _target, data, _M, _generator;
+                verbose = verbose,
                 kwargs...,
             )
         end
