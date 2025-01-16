@@ -94,7 +94,7 @@ function TaijaBase.parallelize(
     if parallelizer.rank == 0
         outputs = []
         for i = 1:length(chunks)
-            output = Serialization.deserialize(joinpath(storage_path, "output_$i.jls"))
+            output = load_with_retry(joinpath(storage_path, "output_$i.jls"))
             push!(outputs, output)
         end
         # Collect output from all processes in rank 0:
