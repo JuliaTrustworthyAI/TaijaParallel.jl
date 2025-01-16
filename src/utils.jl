@@ -1,3 +1,5 @@
+using Serialization
+
 """
     chunk_obs(obs::AbstractVector, n_each::Integer, n_groups::Integer)
 
