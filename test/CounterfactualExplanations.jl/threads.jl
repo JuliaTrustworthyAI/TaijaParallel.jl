@@ -32,4 +32,6 @@ evals = @with_parallelizer parallelizer begin
     evaluate(ces)
 end
 
+bmk = benchmark(counterfactual_data; convergence=:generator_conditions, parallelizer=parallelizer)
+
 @test true
