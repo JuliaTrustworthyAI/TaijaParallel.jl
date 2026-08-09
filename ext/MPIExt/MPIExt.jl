@@ -7,6 +7,7 @@ using MPI
 using ProgressMeter
 using TaijaBase
 using TaijaParallel
+using TaijaParallel: load_with_retry
 
 "The `MPIParallelizer` type is used to parallelize the evaluation of a function using `MPI.jl`."
 struct MPIParallelizer <: TaijaParallel.AbstractParallelizer

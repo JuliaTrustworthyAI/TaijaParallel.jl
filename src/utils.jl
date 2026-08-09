@@ -1,3 +1,5 @@
+using Serialization
+
 """
     chunk_obs(obs::AbstractVector, n_each::Integer, n_groups::Integer)
 
@@ -37,4 +39,24 @@ function split_obs(obs::AbstractVector, n::Integer)
     N = length(obs)
     N_counts = split_count(N, n)
     return split_by_counts(obs, N_counts)
+end
+
+"""
+    load_with_retry(filepath; max_attempts=5, delay=1.0)
+
+Load a file using Serialization.deserialize, retrying up to `max_attempts` times with exponential backoff.
+"""
+function load_with_retry(filepath; max_attempts = 5, delay = 1.0)
+    for attempt = 1:max_attempts
+        try
+            return Serialization.deserialize(filepath)
+        catch e
+            if isa(e, EOFError) && attempt < max_attempts
+                sleep(delay * attempt)  # Exponential backoff
+                continue
+            end
+            rethrow(e)  # Re-throw if it's not an EOFError or we're out of attempts
+        end
+    end
+    error("Failed to load $filepath after $max_attempts attempts")
 end

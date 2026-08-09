@@ -18,7 +18,7 @@ using Pkg
 Pkg.add("TaijaParallel.jl")
 ```
 
-The development version can be installed like so:
+The development version can be installed directly from Github:
 
 ``` julia
 using Pkg

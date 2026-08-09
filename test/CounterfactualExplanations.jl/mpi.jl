@@ -30,13 +30,13 @@ target = fill(2, length(xs))
 ces = TaijaParallel.parallelize(
     parallelizer,
     CounterfactualExplanations.generate_counterfactual,
-    xs, 
-    target, 
-    counterfactual_data, 
-    M, 
-    generator; 
-    convergence=conv, 
-    initialization=:identity,
+    xs,
+    target,
+    counterfactual_data,
+    M,
+    generator;
+    convergence = conv,
+    initialization = :identity,
 )
 
 nsteps = (ce -> total_steps(ce)).(ces)
@@ -47,7 +47,7 @@ end
 
 # Benchmark CE with MPI
 with_logger(NullLogger()) do
-    bmk = benchmark(counterfactual_data; parallelizer=parallelizer)
+    bmk = benchmark(counterfactual_data; parallelizer = parallelizer)
 end
 MPI.Finalize()
 @test MPI.Finalized()
