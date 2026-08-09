@@ -46,8 +46,8 @@ end
 
 Load a file using Serialization.deserialize, retrying up to `max_attempts` times with exponential backoff.
 """
-function load_with_retry(filepath; max_attempts=5, delay=1.0)
-    for attempt in 1:max_attempts
+function load_with_retry(filepath; max_attempts = 5, delay = 1.0)
+    for attempt = 1:max_attempts
         try
             return Serialization.deserialize(filepath)
         catch e

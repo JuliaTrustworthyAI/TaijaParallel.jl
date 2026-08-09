@@ -13,7 +13,7 @@ data = TaijaData.load_linearly_separable()
 counterfactual_data = CounterfactualData(data[1], data[2])
 
 M = fit_model(counterfactual_data, :MLP)
-conv = DecisionThresholdConvergence(decision_threshold=0.95)
+conv = DecisionThresholdConvergence(decision_threshold = 0.95)
 generator = GenericGenerator()
 factual = 1
 target = 2
@@ -23,13 +23,29 @@ xs = select_factual(counterfactual_data, chosen)
 # No parallelizer
 parallelizer = nothing
 ces = @with_parallelizer parallelizer begin
-    generate_counterfactual(xs, target, counterfactual_data, M, generator; convergence=conv, initialization=:identity)
+    generate_counterfactual(
+        xs,
+        target,
+        counterfactual_data,
+        M,
+        generator;
+        convergence = conv,
+        initialization = :identity,
+    )
 end
 
 # Threads
 parallelizer = ThreadsParallelizer()
 ces_threads = @with_parallelizer parallelizer begin
-    generate_counterfactual(xs, target, counterfactual_data, M, generator; convergence=conv, initialization=:identity)
+    generate_counterfactual(
+        xs,
+        target,
+        counterfactual_data,
+        M,
+        generator;
+        convergence = conv,
+        initialization = :identity,
+    )
 end
 
 # MPI
@@ -37,7 +53,15 @@ using MPI
 MPI.Init()
 parallelizer = TaijaParallel.MPIParallelizer(MPI.COMM_WORLD)
 ces_mpi = @with_parallelizer parallelizer begin
-    generate_counterfactual(xs, target, counterfactual_data, M, generator; convergence=conv, initialization=:identity)
+    generate_counterfactual(
+        xs,
+        target,
+        counterfactual_data,
+        M,
+        generator;
+        convergence = conv,
+        initialization = :identity,
+    )
 end
 
 @test all(counterfactual.(ces) .== counterfactual.(ces_threads))

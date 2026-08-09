@@ -33,16 +33,19 @@ function TaijaBase.parallelize(
     if return_flattened
         ces = Vector{CounterfactualExplanations.FlattenedCE}(undef, length(args))
     else
-        ces = Vector{CounterfactualExplanations.CounterfactualExplanation}(undef, length(args))
+        ces = Vector{CounterfactualExplanations.CounterfactualExplanation}(
+            undef,
+            length(args),
+        )
     end
 
     # Verbosity setup:
     if verbose
         prog = ProgressMeter.Progress(
             length(args);
-            desc="Generating counterfactuals using multi-threading ...",
-            showspeed=true,
-            color=:green,
+            desc = "Generating counterfactuals using multi-threading ...",
+            showspeed = true,
+            color = :green,
         )
     end
 

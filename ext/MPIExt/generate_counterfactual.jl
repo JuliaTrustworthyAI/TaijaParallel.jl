@@ -52,8 +52,13 @@ function TaijaBase.parallelize(
             if parallelizer.rank == 0 && verbose
                 # Generating counterfactuals with progress bar:
                 output = []
-                @showprogress desc = "Generating counterfactuals using MPI ..." for x in zip(
-                    _x, _target, fill(data, length(_generator)), _M, _generator,
+                @showprogress desc = "Generating counterfactuals using MPI ..." for x in
+                                                                                    zip(
+                    _x,
+                    _target,
+                    fill(data, length(_generator)),
+                    _M,
+                    _generator,
                 )
                     with_logger(NullLogger()) do
                         push!(output, f(x...; kwargs...))
@@ -71,7 +76,11 @@ function TaijaBase.parallelize(
             output = TaijaBase.parallelize(
                 second_parallelizer,
                 f,
-                _x, _target, data, _M, _generator;
+                _x,
+                _target,
+                data,
+                _M,
+                _generator;
                 verbose = verbose,
                 kwargs...,
             )
