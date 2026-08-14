@@ -16,6 +16,7 @@ struct MPIParallelizer <: TaijaParallel.AbstractParallelizer
     n_proc::Int
     n_each::Union{Nothing,Int}
     threaded::Bool
+    active_comm::MPI.Comm
 end
 
 """
@@ -27,9 +28,11 @@ function TaijaParallel.MPIParallelizer(
     comm::MPI.Comm;
     n_each::Union{Nothing,Int} = nothing,
     threaded::Bool = false,
+    active_comm::Union{Nothing,MPI.Comm} = comm
 )
-    rank = MPI.Comm_rank(comm)                          # Rank of this process in the world 🌍
-    n_proc = MPI.Comm_size(comm)                        # Number of processes in the world 🌍
+    rank = MPI.Comm_rank(comm)                                  # Rank of this process in the world 🌍
+    n_proc = MPI.Comm_size(comm)                                # Number of processes in the world 🌍
+    active_comm = isnothing(active_comm) ? comm : active_comm   # Active communication channel (if specified)
 
     if rank == 0
         @info "Using `MPI.jl` for multi-processing."
@@ -43,7 +46,7 @@ function TaijaParallel.MPIParallelizer(
         end
     end
 
-    return MPIParallelizer(comm, rank, n_proc, n_each, threaded)
+    return MPIParallelizer(comm, rank, n_proc, n_each, threaded, active_comm)
 end
 
 include("generate_counterfactual.jl")
